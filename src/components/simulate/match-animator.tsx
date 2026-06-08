@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { MatchEvent } from "@/types/database"
 
 interface RoundResult {
@@ -37,6 +37,52 @@ interface PenaltyKick {
   round: number
 }
 
+function generatePenaltyKicks(result: "won" | "lost"): PenaltyKick[] {
+  const tryGenerate = (): { kicks: PenaltyKick[]; us: number; them: number } => {
+    const kicks: PenaltyKick[] = []
+    let us = 0, them = 0
+    const totalRounds = 5
+
+    for (let r = 1; r <= totalRounds; r++) {
+      const remaining = totalRounds - r
+      const userScored = Math.random() < 0.75
+      const rivalScored = Math.random() < 0.75
+      if (userScored) us++
+      if (rivalScored) them++
+      kicks.push({ team: "user", scored: userScored, round: r })
+      kicks.push({ team: "rival", scored: rivalScored, round: r })
+      if (us > them + remaining || them > us + remaining) break
+    }
+
+    if (kicks.length === 10 && us === them) {
+      let round = 6
+      while (true) {
+        const userScored = Math.random() < 0.75
+        const rivalScored = Math.random() < 0.75
+        if (userScored) us++
+        if (rivalScored) them++
+        kicks.push({ team: "user", scored: userScored, round })
+        kicks.push({ team: "rival", scored: rivalScored, round })
+        if (us !== them) break
+        round++
+      }
+    }
+
+    return { kicks, us, them }
+  }
+
+  let attempt = 0
+  while (attempt < 100) {
+    const { kicks, us, them } = tryGenerate()
+    const userWon = us > them
+    if ((result === "won" && userWon) || (result === "lost" && !userWon)) {
+      return kicks
+    }
+    attempt++
+  }
+  return []
+}
+
 function PenaltyShootoutView({
   result,
   onComplete,
@@ -44,49 +90,58 @@ function PenaltyShootoutView({
   result: { penaltyResult: "won" | "lost" | null }
   onComplete: () => void
 }) {
-  const [kicks, setKicks] = useState<PenaltyKick[]>([])
+  const allKicks = useRef<PenaltyKick[]>([])
+  const [shown, setShown] = useState(0)
   const [done, setDone] = useState(false)
-  const indexRef = useRef(0)
   const suddenDeathRef = useRef(false)
 
-  const simulateKick = useCallback(() => {
-    const i = indexRef.current
-    const round = Math.floor(i / 2) + 1
+  if (allKicks.current.length === 0) {
+    allKicks.current = generatePenaltyKicks(result.penaltyResult ?? "lost")
+  }
 
-    // Determine if we should stop
-    const userKicks = kicks.filter((k) => k.team === "user")
-    const rivalKicks = kicks.filter((k) => k.team === "rival")
-    const userScore = userKicks.filter((k) => k.scored).length
-    const rivalScore = rivalKicks.filter((k) => k.scored).length
-    const completedRounds = Math.min(userKicks.length, rivalKicks.length)
-
-    // Check if current complete round has a winner
-    if (i > 0 && i % 2 === 0) {
-      if (completedRounds >= 5 && userScore !== rivalScore) {
-        setDone(true)
-        return
-      }
-      if (completedRounds >= 5) {
-        suddenDeathRef.current = true
-      }
-    }
-
-    const isUser = i % 2 === 0
-    const scored = Math.random() < 0.65
-    const kick: PenaltyKick = {
-      team: isUser ? "user" : "rival",
-      scored,
-      round,
-    }
-    setKicks((prev) => [...prev, kick])
-    indexRef.current = i + 1
-  }, [kicks])
-
+  const kickRef = useRef(0)
   useEffect(() => {
     if (done) return
-    const t = setTimeout(simulateKick, 1200)
-    return () => clearTimeout(t)
-  }, [kicks, done, simulateKick])
+    const interval = setInterval(() => {
+      const idx = kickRef.current
+      if (idx >= allKicks.current.length) {
+        setDone(true)
+        clearInterval(interval)
+        return
+      }
+
+      setShown((s) => s + 1)
+
+      const completedAfter = idx + 1
+      const prevKicks = allKicks.current.slice(0, completedAfter)
+      const u = prevKicks.filter((k) => k.team === "user")
+      const r = prevKicks.filter((k) => k.team === "rival")
+      if (u.length > 0 && u.length === r.length) {
+        const us = u.filter((k) => k.scored).length
+        const them = r.filter((k) => k.scored).length
+        const roundsDone = u.length
+
+        if (roundsDone >= 5) {
+          if (us !== them) {
+            setDone(true)
+            clearInterval(interval)
+            return
+          }
+          suddenDeathRef.current = true
+        } else {
+          const remaining = 5 - roundsDone
+          if (us > them + remaining || them > us + remaining) {
+            setDone(true)
+            clearInterval(interval)
+            return
+          }
+        }
+      }
+
+      kickRef.current = idx + 1
+    }, 1200)
+    return () => clearInterval(interval)
+  }, [done])
 
   useEffect(() => {
     if (done) {
@@ -95,15 +150,17 @@ function PenaltyShootoutView({
     }
   }, [done, onComplete])
 
-  const userKicks = kicks.filter((k) => k.team === "user")
-  const rivalKicks = kicks.filter((k) => k.team === "rival")
+  const allUserKicks = allKicks.current.filter((k) => k.team === "user")
+  const allRivalKicks = allKicks.current.filter((k) => k.team === "rival")
+  const displayedKicks = allKicks.current.slice(0, shown)
+  const userKicks = displayedKicks.filter((k) => k.team === "user")
+  const rivalKicks = displayedKicks.filter((k) => k.team === "rival")
   const userScore = userKicks.filter((k) => k.scored).length
   const rivalScore = rivalKicks.filter((k) => k.scored).length
-  const maxRounds = Math.max(userKicks.length, rivalKicks.length)
   const suddenDeath = suddenDeathRef.current
 
-  const normalRounds = suddenDeath ? 5 : maxRounds
-  const sdRounds = suddenDeath ? Math.max(0, maxRounds - 5) : 0
+  const normalRounds = suddenDeath ? 5 : Math.max(allUserKicks.length, allRivalKicks.length)
+  const sdRounds = suddenDeath ? Math.max(0, Math.max(allUserKicks.length, allRivalKicks.length) - 5) : 0
 
   return (
     <div className="border border-zinc-700 rounded-xl p-4 bg-zinc-900/80 mt-3">

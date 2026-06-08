@@ -1,3 +1,29 @@
+export const POSITION_ORDER: Record<string, number> = {
+  POR: 0,
+  DFC: 1,
+  LD: 2,
+  LI: 3,
+  MC: 4,
+  MCD: 5,
+  MI: 6,
+  MD: 7,
+  CAM: 8,
+  EI: 9,
+  ED: 10,
+  DC: 11,
+  SD: 12,
+  CAI: 13,
+  CAD: 14,
+}
+
+export function sortByPosition<T extends { positions: string[] }>(players: T[]): T[] {
+  return [...players].sort((a, b) => {
+    const pa = POSITION_ORDER[a.positions[0]] ?? 99
+    const pb = POSITION_ORDER[b.positions[0]] ?? 99
+    return pa - pb
+  })
+}
+
 export const POSITION_LABELS: Record<string, string> = {
   POR: "POR", DFC: "DFC", LI: "LI", LD: "LD",
   CAI: "CAI", CAD: "CAD", MCD: "MCD", MC: "MC",

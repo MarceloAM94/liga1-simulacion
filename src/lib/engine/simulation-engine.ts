@@ -257,22 +257,23 @@ export function simulateMatch(
 function simulatePenalties(userGk: number, rivalGk: number): boolean {
   let userScore = 0
   let rivalScore = 0
-  const userBase = 0.65 + (userGk - 70) * 0.005
-  const rivalBase = 0.65 + (rivalGk - 70) * 0.005
+  const totalRounds = 5
 
-  for (let ronda = 0; ronda < 5; ronda++) {
+  for (let ronda = 0; ronda < totalRounds; ronda++) {
     if (Math.random() < 0.75) userScore++
     if (Math.random() < 0.75) rivalScore++
+
+    const remaining = totalRounds - (ronda + 1)
+    if (userScore > rivalScore + remaining) return true
+    if (rivalScore > userScore + remaining) return false
   }
 
-  let ronda = 5
-  while (userScore === rivalScore && ronda < 10) {
+  while (true) {
     if (Math.random() < 0.75) userScore++
     if (Math.random() < 0.75) rivalScore++
-    ronda++
+    if (userScore > rivalScore) return true
+    if (rivalScore > userScore) return false
   }
-
-  return userScore > rivalScore
 }
 
 export async function generateFixture(

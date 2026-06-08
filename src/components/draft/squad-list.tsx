@@ -1,5 +1,5 @@
 import type { SquadPlayerWithPlayer } from "@/types/database"
-import { translatePositions } from "@/types/positions"
+import { translatePositions, sortByPosition } from "@/types/positions"
 
 interface SquadListProps {
   players: SquadPlayerWithPlayer[]
@@ -14,10 +14,11 @@ export function SquadList({
   availablePositionCodes,
   onSelectPlayer,
 }: SquadListProps) {
-  const usefulPlayers = players.filter((p) =>
+  const sorted = sortByPosition(players)
+  const usefulPlayers = sorted.filter((p) =>
     p.positions.some((pos) => availablePositionCodes.includes(pos))
   )
-  const disabledPlayers = players.filter(
+  const disabledPlayers = sorted.filter(
     (p) => !p.positions.some((pos) => availablePositionCodes.includes(pos))
   )
 
