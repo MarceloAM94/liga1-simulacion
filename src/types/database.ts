@@ -74,6 +74,7 @@ export interface SelectedSlot {
   player_name?: string
   display_name?: string
   jersey_number?: number
+  rating?: number
 }
 
 export interface TournamentRound {

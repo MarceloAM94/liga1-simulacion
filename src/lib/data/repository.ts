@@ -26,9 +26,10 @@ export async function getSeasonsByTeam(teamId: string): Promise<Season[]> {
   return data ?? []
 }
 
-export async function getSeasonById(id: string): Promise<Season | null> {
-  const { data } = await db().from("seasons").select("*").eq("id", id).single()
-  return data
+export async function getSeasonById(id: string): Promise<(Season & { team: Team }) | null> {
+  const { data } = await db()
+    .from("seasons").select("*, team:teams(*)").eq("id", id).single()
+  return data as unknown as (Season & { team: Team }) | null
 }
 
 export async function getAvailableSeasons(): Promise<(Season & { team: Team })[]> {
@@ -129,7 +130,7 @@ export async function getSelectedSlotsWithPlayers(gameSessionId: string): Promis
 
   const ids = [...new Set(slots.map((s) => s.squad_player_id))]
   const { data: squadPlayers } = await db()
-    .from("squad_players").select("id, jersey_number, player:players(name, display_name)")
+    .from("squad_players").select("id, jersey_number, rating, player:players(name, display_name)")
     .in("id", ids)
   const spMap = new Map(
     (squadPlayers ?? []).map((sp) => {
@@ -140,17 +141,19 @@ export async function getSelectedSlotsWithPlayers(gameSessionId: string): Promis
           player_name: (p as { name?: string })?.name ?? "",
           display_name: (p as { display_name?: string })?.display_name ?? "",
           jersey_number: (sp as { jersey_number?: number })?.jersey_number ?? 0,
+          rating: (sp as { rating?: number })?.rating ?? 70,
         },
       ]
     })
   )
   return slots.map((row) => {
-    const info = spMap.get(row.squad_player_id) ?? { player_name: "", display_name: "", jersey_number: 0 }
+    const info = spMap.get(row.squad_player_id) ?? { player_name: "", display_name: "", jersey_number: 0, rating: 70 }
     return {
       ...row,
       player_name: info.player_name,
       display_name: info.display_name,
       jersey_number: info.jersey_number,
+      rating: info.rating,
     } as unknown as SelectedSlot
   })
 }

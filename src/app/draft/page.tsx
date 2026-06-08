@@ -128,6 +128,32 @@ export default function DraftPage() {
     [phase, slots, selectedSlots, selectedPlayer]
   )
 
+  const handleSimulate = useCallback(async () => {
+    if (!sessionId) return
+    setLoading(true)
+    setError(null)
+
+    try {
+      const res = await fetch("/api/simulate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error)
+        return
+      }
+
+      router.push(`/simulate?session_id=${sessionId}`)
+    } catch {
+      setError("Error al simular")
+    } finally {
+      setLoading(false)
+    }
+  }, [sessionId, router])
+
   const handleAssignSlot = useCallback(
     async (slotIndex: number) => {
       if (!sessionId || !selectedPlayer || phase !== "selecting") return
@@ -187,7 +213,7 @@ export default function DraftPage() {
             phase={phase}
             loading={loading}
             onDraw={handleDraw}
-            onSimulate={() => alert("Fase 3 - Simulación (próximamente)")}
+            onSimulate={handleSimulate}
           />
         </div>
       </header>
