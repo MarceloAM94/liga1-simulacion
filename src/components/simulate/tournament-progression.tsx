@@ -116,7 +116,7 @@ function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
 
   const EVENT_ICONS: Record<string, string> = {
     goal_for: "⚽",
-    goal_against: "⚽",
+    goal_against: "🥅",
     yellow_card: "🟨",
     red_card: "🟥",
     save: "🧤",

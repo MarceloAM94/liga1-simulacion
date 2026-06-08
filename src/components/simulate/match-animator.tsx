@@ -17,7 +17,7 @@ interface RoundResult {
 
 const EVENT_ICONS: Record<string, string> = {
   goal_for: "⚽",
-  goal_against: "⚽",
+  goal_against: "🥅",
   yellow_card: "🟨",
   red_card: "🟥",
   save: "🧤",
@@ -159,8 +159,8 @@ function PenaltyShootoutView({
   const rivalScore = rivalKicks.filter((k) => k.scored).length
   const suddenDeath = suddenDeathRef.current
 
-  const normalRounds = suddenDeath ? 5 : Math.max(allUserKicks.length, allRivalKicks.length)
-  const sdRounds = suddenDeath ? Math.max(0, Math.max(allUserKicks.length, allRivalKicks.length) - 5) : 0
+  const normalRounds = 5
+  const sdRounds = done && suddenDeath ? Math.max(0, Math.max(allUserKicks.length, allRivalKicks.length) - 5) : 0
 
   return (
     <div className="border border-zinc-700 rounded-xl p-4 bg-zinc-900/80 mt-3">
@@ -443,9 +443,6 @@ export function MatchAnimator({
             }}
           />
         </div>
-        <p className="text-[10px] text-zinc-600 text-right mt-1">
-          {visibleCount}/{round.events.length} eventos
-        </p>
       </div>
 
       {/* Events timeline */}
