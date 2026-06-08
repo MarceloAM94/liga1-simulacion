@@ -47,12 +47,28 @@ function PenaltyShootoutView({
   const [kicks, setKicks] = useState<PenaltyKick[]>([])
   const [done, setDone] = useState(false)
   const indexRef = useRef(0)
+  const suddenDeathRef = useRef(false)
 
   const simulateKick = useCallback(() => {
     const i = indexRef.current
-    if (i >= 10) {
-      setDone(true)
-      return
+    const round = Math.floor(i / 2) + 1
+
+    // Determine if we should stop
+    const userKicks = kicks.filter((k) => k.team === "user")
+    const rivalKicks = kicks.filter((k) => k.team === "rival")
+    const userScore = userKicks.filter((k) => k.scored).length
+    const rivalScore = rivalKicks.filter((k) => k.scored).length
+    const completedRounds = Math.min(userKicks.length, rivalKicks.length)
+
+    // Check if current complete round has a winner
+    if (i > 0 && i % 2 === 0) {
+      if (completedRounds >= 5 && userScore !== rivalScore) {
+        setDone(true)
+        return
+      }
+      if (completedRounds >= 5) {
+        suddenDeathRef.current = true
+      }
     }
 
     const isUser = i % 2 === 0
@@ -60,11 +76,11 @@ function PenaltyShootoutView({
     const kick: PenaltyKick = {
       team: isUser ? "user" : "rival",
       scored,
-      round: Math.floor(i / 2) + 1,
+      round,
     }
     setKicks((prev) => [...prev, kick])
     indexRef.current = i + 1
-  }, [])
+  }, [kicks])
 
   useEffect(() => {
     if (done) return
@@ -83,18 +99,26 @@ function PenaltyShootoutView({
   const rivalKicks = kicks.filter((k) => k.team === "rival")
   const userScore = userKicks.filter((k) => k.scored).length
   const rivalScore = rivalKicks.filter((k) => k.scored).length
+  const maxRounds = Math.max(userKicks.length, rivalKicks.length)
+  const suddenDeath = suddenDeathRef.current
+
+  const normalRounds = suddenDeath ? 5 : maxRounds
+  const sdRounds = suddenDeath ? Math.max(0, maxRounds - 5) : 0
 
   return (
     <div className="border border-zinc-700 rounded-xl p-4 bg-zinc-900/80 mt-3">
       <h3 className="text-sm font-bold text-center mb-3 uppercase tracking-wide text-zinc-300">
         Tanda de penales
+        {suddenDeath && (
+          <span className="text-yellow-500 ml-2">(Muerte súbita)</span>
+        )}
       </h3>
 
       <div className="flex justify-center gap-8">
         <div className="text-center">
           <p className="text-xs text-zinc-500 mb-2">Tu equipo</p>
-          <div className="grid grid-cols-5 gap-1">
-            {Array.from({ length: 5 }).map((_, i) => {
+          <div className="flex flex-wrap justify-center gap-1 max-w-[200px]">
+            {Array.from({ length: normalRounds }).map((_, i) => {
               const kick = userKicks[i]
               return (
                 <div
@@ -115,19 +139,44 @@ function PenaltyShootoutView({
                 </div>
               )
             })}
+            {sdRounds > 0 && (
+              <>
+                <div className="w-full h-px bg-zinc-700 my-1" />
+                {Array.from({ length: sdRounds }).map((_, i) => {
+                  const kick = userKicks[5 + i]
+                  return (
+                    <div
+                      key={`sd-${i}`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border ${
+                        kick
+                          ? kick.scored
+                            ? "bg-emerald-900/60 border-emerald-600"
+                            : "bg-red-900/60 border-red-600"
+                          : "bg-zinc-800 border-zinc-700"
+                      }`}
+                    >
+                      {kick ? (kick.scored ? "⚽" : "✕") : i === userKicks.length - 5 ? (
+                        <span className="animate-pulse text-zinc-500">•</span>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
           </div>
-          <p className="text-lg font-black mt-1">{userScore}</p>
+          <p className="text-lg font-black mt-2">{userScore}</p>
         </div>
 
-        <div className="text-center">
-          <p className="text-xs text-zinc-500 mb-2">{result.penaltyResult === "won" ? "Perdiste" : "Ganaste"}</p>
-          <p className="text-2xl font-black text-zinc-600 mt-4">:</p>
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-2xl font-black text-zinc-600">:</p>
         </div>
 
         <div className="text-center">
           <p className="text-xs text-zinc-500 mb-2">Rival</p>
-          <div className="grid grid-cols-5 gap-1">
-            {Array.from({ length: 5 }).map((_, i) => {
+          <div className="flex flex-wrap justify-center gap-1 max-w-[200px]">
+            {Array.from({ length: normalRounds }).map((_, i) => {
               const kick = rivalKicks[i]
               return (
                 <div
@@ -148,8 +197,34 @@ function PenaltyShootoutView({
                 </div>
               )
             })}
+            {sdRounds > 0 && (
+              <>
+                <div className="w-full h-px bg-zinc-700 my-1" />
+                {Array.from({ length: sdRounds }).map((_, i) => {
+                  const kick = rivalKicks[5 + i]
+                  return (
+                    <div
+                      key={`sd-${i}`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border ${
+                        kick
+                          ? kick.scored
+                            ? "bg-emerald-900/60 border-emerald-600"
+                            : "bg-red-900/60 border-red-600"
+                          : "bg-zinc-800 border-zinc-700"
+                      }`}
+                    >
+                      {kick ? (kick.scored ? "⚽" : "✕") : i === rivalKicks.length - 5 ? (
+                        <span className="animate-pulse text-zinc-500">•</span>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
           </div>
-          <p className="text-lg font-black mt-1">{rivalScore}</p>
+          <p className="text-lg font-black mt-2">{rivalScore}</p>
         </div>
       </div>
 

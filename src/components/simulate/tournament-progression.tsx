@@ -94,6 +94,95 @@ function BracketView({
   )
 }
 
+function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
+  const positionLabels: Record<string, string> = {
+    POR: "POR", DFC: "DFC", LI: "LI", LD: "LD",
+    MC: "MC", MCD: "MCD", MI: "MI", MD: "MD", CAM: "CAM",
+    EI: "EI", ED: "ED", DC: "DC", SD: "SD",
+    CAI: "CAI", CAD: "CAD",
+  }
+
+  const EVENT_ICONS: Record<string, string> = {
+    goal_for: "⚽",
+    goal_against: "⚽",
+    yellow_card: "🟨",
+    red_card: "🟥",
+    save: "🧤",
+  }
+
+  const EVENT_LABELS: Record<string, string> = {
+    goal_for: "Gol",
+    goal_against: "Gol rival",
+    yellow_card: "Amarilla",
+    red_card: "Roja",
+    save: "Atajada",
+  }
+
+  return (
+    <div className="space-y-3">
+      {rounds.map((round, i) => {
+        const won =
+          round.goalsFor > round.goalsAgainst ||
+          (round.goalsFor === round.goalsAgainst && round.penaltyResult === "won")
+
+        return (
+          <details
+            key={i}
+            className={`border rounded-xl overflow-hidden ${
+              won
+                ? "border-emerald-700 bg-emerald-950/20"
+                : "border-red-700 bg-red-950/20"
+            }`}
+          >
+            <summary className="p-4 cursor-pointer hover:bg-zinc-800/30 transition-colors">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-zinc-500 uppercase tracking-wide">
+                    {round.roundName}
+                  </p>
+                  <p className="text-sm text-zinc-300">
+                    vs {round.rivalTeamName} ({round.rivalYear})
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-xl font-black ${
+                    won ? "text-emerald-400" : "text-red-400"
+                  }`}>
+                    {round.goalsFor} - {round.goalsAgainst}
+                  </span>
+                  <span className="text-xs text-zinc-600">▼</span>
+                </div>
+              </div>
+              {round.wentToPenalties && (
+                <p className="text-xs text-zinc-500 mt-1">
+                  Penales: {round.penaltyResult === "won" ? "Ganaste" : "Perdiste"}
+                </p>
+              )}
+            </summary>
+            <div className="px-4 pb-4 space-y-1">
+              {round.events.length === 0 ? (
+                <p className="text-sm text-zinc-500 italic">Sin eventos destacados</p>
+              ) : (
+                round.events.map((ev, j) => (
+                  <div key={j} className="flex items-start gap-2 text-sm py-0.5">
+                    <span className="text-xs text-zinc-500 w-8 shrink-0 font-mono">
+                      {ev.minute}&apos;
+                    </span>
+                    <span className="shrink-0">{EVENT_ICONS[ev.event_type] ?? "•"}</span>
+                    <span className="text-zinc-300">
+                      {ev.description ?? EVENT_LABELS[ev.event_type] ?? ev.event_type}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </details>
+        )
+      })}
+    </div>
+  )
+}
+
 function ChampionsCard({
   cardData,
   isChampion,
@@ -210,7 +299,11 @@ export function TournamentProgression({ data }: { data: TournamentData }) {
           onComplete={handleMatchComplete}
         />
       ) : (
-        <ChampionsCard cardData={data.cardData} isChampion={data.isChampion} />
+        <div className="space-y-5">
+          <ChampionsCard cardData={data.cardData} isChampion={data.isChampion} />
+          <h2 className="text-lg font-bold text-zinc-200">Historial de partidos</h2>
+          <MatchHistoryCards rounds={data.rounds} />
+        </div>
       )}
 
       {finished && (
