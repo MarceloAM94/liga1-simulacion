@@ -394,8 +394,12 @@ export function MatchAnimator({
     <div className="space-y-3">
       {/* Scoreboard */}
       <div
-        className={`border rounded-xl p-4 ${
-          won ? "border-emerald-700 bg-emerald-950/30" : "border-red-700 bg-red-950/30"
+        className={`border rounded-xl p-4 transition-colors duration-700 ${
+          phase === "done" || phase === "penalties"
+            ? won
+              ? "border-emerald-700 bg-emerald-950/30"
+              : "border-red-700 bg-red-950/30"
+            : "border-zinc-700 bg-zinc-900/50"
         }`}
       >
         <p className="text-xs text-zinc-500 uppercase tracking-wide mb-2">
