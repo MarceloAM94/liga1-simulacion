@@ -1,4 +1,5 @@
 import type { FormationSlot, SelectedSlot } from "@/types/database"
+import { POSITION_LABELS } from "@/types/positions"
 
 interface PitchProps {
   slots: FormationSlot[]
@@ -6,28 +7,6 @@ interface PitchProps {
   highlightedSlots: FormationSlot[]
   formationName: string | null
   onSlotClick: (slotIndex: number) => void
-}
-
-const positionLabels: Record<string, string> = {
-  GK: "POR", CB: "DFC", LB: "LI", RB: "LD",
-  LWB: "CIL", RWB: "CID", CDM: "MCD", CM: "MC",
-  LM: "MI", RM: "MD", CAM: "MCO", LW: "EI",
-  RW: "ED", CF: "DC", ST: "DC",
-}
-
-const slotPositions: Record<number, { top: string; left: string }> = {
-  0: { top: "92%", left: "50%" },   // GK
-  1: { top: "75%", left: "20%" },   // CB
-  2: { top: "75%", left: "80%" },   // CB
-  3: { top: "68%", left: "50%" },   // CB (libero)
-  4: { top: "60%", left: "8%" },    // LB
-  5: { top: "60%", left: "92%" },   // RB
-  6: { top: "45%", left: "50%" },   // CDM
-  7: { top: "35%", left: "25%" },   // CM
-  8: { top: "35%", left: "75%" },   // CM
-  9: { top: "20%", left: "20%" },   // LW
-  10: { top: "20%", left: "80%" },  // RW
-  11: { top: "12%", left: "50%" },  // ST
 }
 
 export function Pitch({
@@ -79,7 +58,8 @@ export function Pitch({
         {/* Slots */}
         {slots.map((slot) => {
           const index = slot.slot_index
-          const pos = slotPositions[index] ?? { top: "50%", left: "50%" }
+          const left = `${slot.x_percent * 100}%`
+          const top = `${(1 - slot.y_percent) * 100}%`
           const occupied = isOccupied(index)
           const highlighted = isHighlighted(index)
           const slotPlayer = getSlotPlayer(index)
@@ -97,7 +77,7 @@ export function Pitch({
                 flex flex-col items-center justify-center
                 ${occupied ? "cursor-default" : highlighted ? "cursor-pointer" : "cursor-not-allowed"}
               `}
-              style={{ top: pos.top, left: pos.left, zIndex: 1 }}
+              style={{ top, left, zIndex: 1 }}
             >
               <div
                 className={`
@@ -117,7 +97,7 @@ export function Pitch({
                     {slotPlayer?.player_name?.slice(0, 2) ?? ""}
                   </span>
                 ) : (
-                  <span className="text-[10px]">{positionLabels[slot.position_code] ?? slot.position_code}</span>
+                  <span className="text-[10px]">{POSITION_LABELS[slot.position_code] ?? slot.position_code}</span>
                 )}
               </div>
             </button>

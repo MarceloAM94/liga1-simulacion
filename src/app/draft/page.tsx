@@ -154,7 +154,8 @@ export default function DraftPage() {
         if (data.isComplete) {
           setPhase("complete")
         } else {
-          setPhase("drawn")
+          setDraft(null)
+          setPhase("welcome")
         }
 
         setSelectedPlayer(null)

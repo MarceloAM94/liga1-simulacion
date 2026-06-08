@@ -1,4 +1,5 @@
 import type { SquadPlayerWithPlayer } from "@/types/database"
+import { translatePositions } from "@/types/positions"
 
 interface SquadListProps {
   players: SquadPlayerWithPlayer[]
@@ -51,7 +52,7 @@ export function SquadList({
                 {player.player.name}
               </p>
               <p className="text-xs text-zinc-500 truncate">
-                {player.positions.join(" / ")}
+                {translatePositions(player.positions)}
               </p>
             </div>
           </button>
@@ -70,7 +71,7 @@ export function SquadList({
                 {player.player.name}
               </p>
               <p className="text-xs text-zinc-700 truncate">
-                {player.positions.join(" / ")}
+                {translatePositions(player.positions)}
               </p>
             </div>
           </div>
