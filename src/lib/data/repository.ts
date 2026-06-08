@@ -183,6 +183,13 @@ export async function getTournamentRounds(gameSessionId: string): Promise<Tourna
   return data ?? []
 }
 
+export async function deleteTournamentRounds(gameSessionId: string): Promise<void> {
+  await db()
+    .from("tournament_rounds")
+    .delete()
+    .eq("game_session_id", gameSessionId)
+}
+
 // ---- Match Results ----
 export async function createMatchResult(
   result: Omit<MatchResult, "id">

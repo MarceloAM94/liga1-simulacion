@@ -110,7 +110,7 @@ function SimulateContent() {
     )
   }
 
-  return <TournamentProgression data={data} />
+  return <TournamentProgression data={data} sessionId={sessionId!} />
 }
 
 export default function SimulatePage() {

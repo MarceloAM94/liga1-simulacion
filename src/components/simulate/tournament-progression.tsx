@@ -258,9 +258,11 @@ function ChampionsCard({
   )
 }
 
-export function TournamentProgression({ data }: { data: TournamentData }) {
+export function TournamentProgression({ data, sessionId }: { data: TournamentData; sessionId: string }) {
   const [currentRound, setCurrentRound] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [showCard, setShowCard] = useState(false)
+  const [resimulating, setResimulating] = useState(false)
 
   const handleMatchComplete = useCallback(() => {
     const next = currentRound + 1
@@ -279,6 +281,22 @@ export function TournamentProgression({ data }: { data: TournamentData }) {
       }
     }
   }, [currentRound, data.rounds])
+
+  const handleResimulate = useCallback(async () => {
+    setResimulating(true)
+    try {
+      const res = await fetch("/api/simulate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId, force: true }),
+      })
+      if (!res.ok) throw new Error("Error al re-simular")
+      window.location.reload()
+    } catch {
+      setResimulating(false)
+      alert("Error al re-simular. Intenta de nuevo.")
+    }
+  }, [sessionId])
 
   return (
     <div className="flex flex-1 flex-col p-4 gap-5 max-w-3xl mx-auto w-full">
@@ -300,20 +318,39 @@ export function TournamentProgression({ data }: { data: TournamentData }) {
         />
       ) : (
         <div className="space-y-5">
-          <ChampionsCard cardData={data.cardData} isChampion={data.isChampion} />
-          <h2 className="text-lg font-bold text-zinc-200">Historial de partidos</h2>
-          <MatchHistoryCards rounds={data.rounds} />
+          {showCard && (
+            <ChampionsCard cardData={data.cardData} isChampion={data.isChampion} />
+          )}
+          {!showCard && (
+            <>
+              <h2 className="text-lg font-bold text-zinc-200">Historial de partidos</h2>
+              <MatchHistoryCards rounds={data.rounds} />
+            </>
+          )}
         </div>
       )}
 
       {finished && (
-        <div className="flex justify-center pb-8">
+        <div className="flex flex-wrap justify-center gap-3 pb-8">
           <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700"
+            onClick={handleResimulate}
+            disabled={resimulating}
+            className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors disabled:opacity-50"
           >
-            Volver al draft
+            {resimulating ? "Simulando..." : "Repetir simulación"}
           </button>
+          <button
+            onClick={() => setShowCard((s) => !s)}
+            className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors"
+          >
+            {showCard ? "Volver al historial" : "Ver card"}
+          </button>
+          <a
+            href="/"
+            className="px-5 py-3 bg-emerald-800 rounded-xl text-sm hover:bg-emerald-700 transition-colors font-medium"
+          >
+            Volver a jugar
+          </a>
         </div>
       )}
     </div>

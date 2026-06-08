@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getGameSession, getFormationWithSlots, getSelectedSlotsWithPlayers, updateGameSession } from "@/lib/data/repository"
+import { getGameSession, getFormationWithSlots, getSelectedSlotsWithPlayers, updateGameSession, deleteTournamentRounds } from "@/lib/data/repository"
 import { simulateTournament } from "@/lib/engine/simulation-engine"
 
 export async function POST(request: NextRequest) {
   try {
-    const { session_id } = await request.json()
+    const { session_id, force } = await request.json()
 
     if (!session_id) {
       return NextResponse.json(
@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (session.status === "finished") {
+    if (force) {
+      await deleteTournamentRounds(session.id.toString())
+      await updateGameSession(session.id.toString(), { status: "draft" })
+    } else if (session.status === "finished") {
       return NextResponse.json(
         { error: "Esta sesión ya fue simulada" },
         { status: 400 }
