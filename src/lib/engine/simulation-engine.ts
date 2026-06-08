@@ -52,6 +52,10 @@ function randomInt(min: number, max: number): number {
   return Math.floor(randomFloat(min, max + 1))
 }
 
+function clampMinute(m: number): number {
+  return Math.max(1, Math.min(90, m))
+}
+
 function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]
 }
@@ -163,13 +167,21 @@ export function simulateMatch(
     const rollFor = Math.random()
     if (rollFor < baseChance + keyBonus) {
       gf++
-      const scorer = rollFor < 0.05 ? "de cabeza" : "con remate de media distancia"
-      const detail = rollFor < 0.2 ? "tras un tiro de esquina" : rollFor < 0.4 ? "asistido por un compañero" : "tras una jugada individual"
+      const metodo = pickRandom(["de cabeza", "con remate de media distancia", "con un disparo cruzado", "con un tiro libre", "tras un rebote", "de chilena", "con un zurdazo", "con un derechazo"])
+      const detalle = pickRandom([
+        "asistido por un compañero",
+        "tras un tiro de esquina",
+        "tras una jugada individual",
+        "aprovechando un error defensivo",
+        "tras un centro desde la banda",
+        "en una contra letal",
+        "con un pase filtrado al espacio",
+      ])
       events.push({
         match_result_id: matchId,
-        minute: minute + randomInt(-4, 4),
+        minute: clampMinute(minute + randomInt(-4, 4)),
         event_type: "goal_for",
-        description: `GOL — ${detail} (${scorer})`,
+        description: `⚽ GOL — ${metodo} (${detalle})`,
       })
     }
 
@@ -180,19 +192,20 @@ export function simulateMatch(
       ga++
       events.push({
         match_result_id: matchId,
-        minute: minute + randomInt(-4, 4),
+        minute: clampMinute(minute + randomInt(-4, 4)),
         event_type: "goal_against",
-        description: "GOL del rival",
+        description: "⚽ GOL del rival",
       })
     }
 
     // Tarjetas amarillas
     if (Math.random() < 0.02) {
+      const razon = pickRandom(["por entrada fuerte", "por protestar", "por mano", "por falta táctica", "por simulación"])
       events.push({
         match_result_id: matchId,
-        minute: minute + randomInt(-4, 4),
+        minute: clampMinute(minute + randomInt(-4, 4)),
         event_type: "yellow_card",
-        description: "Tarjeta amarilla",
+        description: `🟨 Tarjeta amarilla — ${razon}`,
       })
     }
 
@@ -200,19 +213,20 @@ export function simulateMatch(
     if (Math.random() < 0.005) {
       events.push({
         match_result_id: matchId,
-        minute: minute + randomInt(-4, 4),
+        minute: clampMinute(minute + randomInt(-4, 4)),
         event_type: "red_card",
-        description: "Tarjeta roja",
+        description: "🟥 Tarjeta roja — expulsión directa",
       })
     }
 
     // Atajadas
     if (Math.random() < 0.03 + (userRatings.gk - 70) * 0.002) {
+      const tipo = pickRandom(["con el pie", "volando al palo", "con una manopla", "con seguridad", "salvando sobre la línea"])
       events.push({
         match_result_id: matchId,
-        minute: minute + randomInt(-4, 4),
+        minute: clampMinute(minute + randomInt(-4, 4)),
         event_type: "save",
-        description: "Atajada del portero",
+        description: `🧤 Atajada — ${tipo}`,
       })
     }
   }
