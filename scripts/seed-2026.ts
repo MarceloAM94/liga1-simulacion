@@ -18,17 +18,6 @@ const db = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { persistSession: false },
 })
 
-const POSITION_MAP: Record<string, string> = {
-  POR: "GK",
-  DFC: "CB",
-  LI: "LB",
-  LD: "RB",
-  MC: "CM",
-  EI: "LW",
-  ED: "RW",
-  DC: "ST",
-}
-
 interface PlayerJson {
   id: string
   nombre: string
@@ -50,10 +39,6 @@ interface SeedData {
   temporada: number
   liga: string
   equipos: TeamJson[]
-}
-
-function mapPositions(positions: string[]): string[] {
-  return positions.map((p) => POSITION_MAP[p] ?? p)
 }
 
 async function deleteAll(table: string): Promise<boolean> {
@@ -158,7 +143,7 @@ async function seed() {
           season_id: seasonId,
           player_id: playerId,
           rating: p.rating,
-          positions: mapPositions(p.posiciones),
+          positions: p.posiciones,
           jersey_number: p.numero,
           is_key_player: p.rating >= 76,
         },

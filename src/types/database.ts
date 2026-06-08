@@ -103,14 +103,15 @@ export interface MatchEvent {
 }
 
 export type PositionCode =
-  | "GK" | "CB" | "LB" | "RB" | "LWB" | "RWB"
-  | "CDM" | "CM" | "LM" | "RM" | "CAM"
-  | "LW" | "RW" | "CF" | "ST"
+  | "POR" | "DFC" | "LI" | "LD"
+  | "MC"
+  | "EI" | "ED" | "DC"
+  | "MCD" | "CAM" | "MI" | "MD" | "CAI" | "CAD" | "SD"
 
 export const ALL_POSITION_CODES: PositionCode[] = [
-  "GK", "CB", "LB", "RB", "LWB", "RWB",
-  "CDM", "CM", "LM", "RM", "CAM",
-  "LW", "RW", "CF", "ST"
+  "POR", "DFC", "LI", "LD", "CAI", "CAD",
+  "MCD", "MC", "MI", "MD", "CAM",
+  "EI", "ED", "DC", "SD",
 ]
 
 export interface DrawResult {

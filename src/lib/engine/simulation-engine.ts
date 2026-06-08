@@ -65,9 +65,9 @@ const ROUND_NAMES = [
 ]
 
 export function calculateLineRatings(slots: SelectedSlot[]): LineRatings {
-  const defPos = ["GK", "CB", "LB", "RB", "LWB", "RWB"]
-  const midPos = ["CDM", "CM", "LM", "RM", "CAM"]
-  const atkPos = ["LW", "RW", "CF", "ST"]
+  const defPos = ["POR", "DFC", "LI", "LD", "CAI", "CAD"]
+  const midPos = ["MCD", "MC", "MI", "MD", "CAM"]
+  const atkPos = ["EI", "ED", "DC", "SD"]
 
   let gk = 70
   const def: number[] = []
@@ -75,7 +75,7 @@ export function calculateLineRatings(slots: SelectedSlot[]): LineRatings {
   const atk: number[] = []
 
   for (const s of slots) {
-    if (s.position_code === "GK") {
+    if (s.position_code === "POR") {
       gk = s.rating ?? 70
     } else if (defPos.includes(s.position_code)) {
       def.push(s.rating ?? 70)
@@ -103,9 +103,9 @@ export function calculateRivalLineRatings(
   squad: SquadPlayerWithPlayer[],
   formationSlots: { position_code: string }[]
 ): LineRatings {
-  const defPos = ["GK", "CB", "LB", "RB", "LWB", "RWB"]
-  const midPos = ["CDM", "CM", "LM", "RM", "CAM"]
-  const atkPos = ["LW", "RW", "CF", "ST"]
+  const defPos = ["POR", "DFC", "LI", "LD", "CAI", "CAD"]
+  const midPos = ["MCD", "MC", "MI", "MD", "CAM"]
+  const atkPos = ["EI", "ED", "DC", "SD"]
 
   const def: number[] = []
   const mid: number[] = []
@@ -118,7 +118,7 @@ export function calculateRivalLineRatings(
       .sort((a, b) => b.rating - a.rating)[0]
     if (!best) continue
 
-    if (slot.position_code === "GK") {
+    if (slot.position_code === "POR") {
       gk = best.rating
     } else if (defPos.includes(slot.position_code)) {
       def.push(best.rating)

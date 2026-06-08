@@ -113,9 +113,10 @@ function MatchCard({ round }: { round: RoundResult }) {
 
 function ChampionsCard({ cardData, isChampion }: { cardData: CardData; isChampion: boolean }) {
   const positionLabels: Record<string, string> = {
-    GK: "POR", CB: "DFC", LB: "LI", RB: "LD", LWB: "CAI", RWB: "CAD",
-    CDM: "MCD", CM: "MC", LM: "MI", RM: "MD", CAM: "MCO",
-    LW: "EI", RW: "ED", CF: "SD", ST: "DC",
+    POR: "POR", DFC: "DFC", LI: "LI", LD: "LD",
+    MC: "MC", MCD: "MCD", MI: "MI", MD: "MD", CAM: "CAM",
+    EI: "EI", ED: "ED", DC: "DC", SD: "SD",
+    CAI: "CAI", CAD: "CAD",
   }
 
   return (
