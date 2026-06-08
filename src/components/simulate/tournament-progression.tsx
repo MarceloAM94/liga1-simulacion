@@ -28,26 +28,36 @@ function BracketView({
   rounds,
   currentIndex,
   isChampion,
+  finished,
 }: {
   rounds: RoundResult[]
   currentIndex: number
   isChampion: boolean
+  finished: boolean
 }) {
+  const ALL_ROUNDS = ["Octavos de final", "Cuartos de final", "Semifinal", "Final"]
+
   return (
     <div className="flex gap-2 overflow-x-auto pb-3">
-      {rounds.map((round, i) => {
-        const won =
-          round.goalsFor > round.goalsAgainst ||
-          (round.goalsFor === round.goalsAgainst && round.penaltyResult === "won")
-        const isPast = i < currentIndex
+      {ALL_ROUNDS.map((name, i) => {
+        const hasData = i < rounds.length
+        const isPast = i < currentIndex && hasData
         const isCurrent = i === currentIndex
-        const isLast = i === rounds.length - 1
+        const isFuture = i > currentIndex
+        const eliminatedHere = finished && !isChampion && i === rounds.length - 1 && i === currentIndex
+
+        let won = false
+        if (hasData) {
+          won =
+            rounds[i].goalsFor > rounds[i].goalsAgainst ||
+            (rounds[i].goalsFor === rounds[i].goalsAgainst && rounds[i].penaltyResult === "won")
+        }
 
         return (
           <div key={i} className="flex flex-col items-center shrink-0">
             <div
               className={`w-28 border rounded-lg p-2 text-center transition-all duration-300 ${
-                isCurrent
+                isCurrent && !finished
                   ? "border-zinc-400 bg-zinc-900 scale-105"
                   : isPast
                   ? won
@@ -57,39 +67,41 @@ function BracketView({
               }`}
             >
               <p className="text-[9px] text-zinc-500 uppercase tracking-wide mb-1 truncate">
-                {round.roundName}
+                {name}
               </p>
               {isPast ? (
                 <>
                   <p className="text-base font-black">
-                    {round.goalsFor} - {round.goalsAgainst}
+                    {rounds[i].goalsFor} - {rounds[i].goalsAgainst}
                   </p>
-                  <p className="text-[9px] text-zinc-500 truncate">{round.rivalTeamName}</p>
+                  <p className="text-[9px] text-zinc-500 truncate">{rounds[i].rivalTeamName}</p>
                 </>
               ) : (
-                <p className="text-base font-black text-zinc-600">?-?</p>
+                <>
+                  <p className="text-base font-black text-zinc-600">?-?</p>
+                  <p className="text-[9px] text-zinc-700 truncate">???</p>
+                </>
               )}
             </div>
-            {!isLast && <div className="h-4 w-px bg-zinc-800" />}
+            {i < ALL_ROUNDS.length - 1 && <div className="h-4 w-px bg-zinc-800" />}
           </div>
         )
       })}
-      {isChampion && (
-        <div className="flex flex-col items-center shrink-0">
-          <div
-            className={`w-28 border-2 rounded-lg p-2 text-center transition-all duration-300 ${
-              currentIndex >= rounds.length
-                ? "border-yellow-500 bg-yellow-950/20"
-                : "border-zinc-800 bg-zinc-900/50 opacity-40"
-            }`}
-          >
-            <p className="text-[9px] uppercase tracking-wide text-yellow-500 font-bold">
-              ¡Campeón!
-            </p>
-            <p className="text-lg">🏆</p>
-          </div>
+      {/* Champion trophy */}
+      <div className="flex flex-col items-center shrink-0">
+        <div
+          className={`w-28 border-2 rounded-lg p-2 text-center transition-all duration-300 ${
+            finished && isChampion
+              ? "border-yellow-500 bg-yellow-950/20"
+              : "border-zinc-800 bg-zinc-900/50 opacity-20"
+          }`}
+        >
+          <p className="text-[9px] uppercase tracking-wide text-yellow-500 font-bold">
+            ¡Campeón!
+          </p>
+          <p className="text-lg">🏆</p>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -306,8 +318,9 @@ export function TournamentProgression({ data, sessionId }: { data: TournamentDat
 
       <BracketView
         rounds={data.rounds}
-        currentIndex={finished ? data.rounds.length : currentRound}
+        currentIndex={currentRound}
         isChampion={data.isChampion}
+        finished={finished}
       />
 
       {!finished && currentRound < data.rounds.length ? (
