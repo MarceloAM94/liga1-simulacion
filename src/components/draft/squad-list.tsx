@@ -4,21 +4,21 @@ import { translatePositions } from "@/types/positions"
 interface SquadListProps {
   players: SquadPlayerWithPlayer[]
   selectedPlayer: SquadPlayerWithPlayer | null
-  occupiedPositions: string[]
+  availablePositionCodes: string[]
   onSelectPlayer: (player: SquadPlayerWithPlayer) => void
 }
 
 export function SquadList({
   players,
   selectedPlayer,
-  occupiedPositions,
+  availablePositionCodes,
   onSelectPlayer,
 }: SquadListProps) {
   const usefulPlayers = players.filter((p) =>
-    p.positions.some((pos) => !occupiedPositions.includes(pos))
+    p.positions.some((pos) => availablePositionCodes.includes(pos))
   )
   const disabledPlayers = players.filter(
-    (p) => !p.positions.some((pos) => !occupiedPositions.includes(pos))
+    (p) => !p.positions.some((pos) => availablePositionCodes.includes(pos))
   )
 
   return (
@@ -33,9 +33,6 @@ export function SquadList({
           <button
             key={player.id}
             onClick={() => onSelectPlayer(player)}
-            disabled={!player.positions.some(
-              (pos) => !occupiedPositions.includes(pos)
-            )}
             className={`w-full text-left px-3 py-2.5 transition-colors flex items-center gap-3
               ${
                 selectedPlayer?.id === player.id

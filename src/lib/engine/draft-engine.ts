@@ -16,12 +16,7 @@ import type {
   Season, Team, SquadPlayerWithPlayer, FormationSlot,
   SelectedSlot, GameSession, PositionCode, DrawResult,
 } from "@/types/database"
-
-const ALL_POSITIONS: PositionCode[] = [
-  "GK", "CB", "LB", "RB", "LWB", "RWB",
-  "CDM", "CM", "LM", "RM", "CAM",
-  "LW", "RW", "CF", "ST",
-]
+import { getAvailablePositionCodes } from "@/types/positions"
 
 function randomPick<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]
@@ -36,11 +31,16 @@ export async function drawSquad(
     session = await createGameSession(sessionId, formationId)
   }
 
-  const slots = await getSelectedSlots(session.id)
-  const occupiedPositions = slots.map((s) => s.position_code as PositionCode)
-  const availablePositions = ALL_POSITIONS.filter(
-    (p) => !occupiedPositions.includes(p)
-  )
+  const [formation, slots] = await Promise.all([
+    getFormationWithSlots(formationId),
+    getSelectedSlots(session.id),
+  ])
+  if (!formation) throw new Error("Formación no encontrada")
+
+  const availablePositions = getAvailablePositionCodes(
+    formation.slots,
+    slots
+  ) as PositionCode[]
 
   if (availablePositions.length === 0) {
     throw new Error("Todas las posiciones están ocupadas")
@@ -94,19 +94,6 @@ export async function drawSquad(
     },
     availablePositions,
   }
-}
-
-export function getHighlightSlots(
-  player: SquadPlayerWithPlayer,
-  formationSlots: FormationSlot[],
-  occupiedPositions: PositionCode[]
-): FormationSlot[] {
-  const availablePositions = player.positions.filter(
-    (p) => !occupiedPositions.includes(p as PositionCode)
-  )
-  return formationSlots.filter((s) =>
-    availablePositions.includes(s.position_code as PositionCode)
-  )
 }
 
 export async function assignPlayer(

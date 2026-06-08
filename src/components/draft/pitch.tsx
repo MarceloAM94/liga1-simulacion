@@ -4,7 +4,7 @@ import { POSITION_LABELS } from "@/types/positions"
 interface PitchProps {
   slots: FormationSlot[]
   selectedSlots: SelectedSlot[]
-  highlightedSlots: FormationSlot[]
+  highlightedSlotIndices: number[]
   formationName: string | null
   onSlotClick: (slotIndex: number) => void
 }
@@ -12,12 +12,12 @@ interface PitchProps {
 export function Pitch({
   slots,
   selectedSlots,
-  highlightedSlots,
+  highlightedSlotIndices,
   formationName,
   onSlotClick,
 }: PitchProps) {
   const isHighlighted = (index: number) =>
-    highlightedSlots.some((s) => s.slot_index === index)
+    highlightedSlotIndices.includes(index)
 
   const isOccupied = (index: number) =>
     selectedSlots.some((s) => s.slot_index === index)

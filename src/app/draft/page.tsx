@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import type {
   Season, Team, SquadPlayerWithPlayer, FormationSlot,
   SelectedSlot, Formation,
 } from "@/types/database"
+import { getAvailablePositionCodes, getHighlightedSlots } from "@/types/positions"
 import { Pitch } from "@/components/draft/pitch"
 import { SquadList } from "@/components/draft/squad-list"
 import { DrawButton } from "@/components/draft/draw-button"
@@ -26,14 +27,18 @@ export default function DraftPage() {
   const [formation, setFormation] = useState<Formation | null>(null)
   const [slots, setSlots] = useState<FormationSlot[]>([])
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([])
-  const [occupiedPositions, setOccupiedPositions] = useState<string[]>([])
   const [draft, setDraft] = useState<DraftData | null>(null)
   const [selectedPlayer, setSelectedPlayer] = useState<SquadPlayerWithPlayer | null>(null)
-  const [highlightedSlots, setHighlightedSlots] = useState<FormationSlot[]>([])
+  const [highlightedSlotIndices, setHighlightedSlotIndices] = useState<number[]>([])
   const [phase, setPhase] = useState<Phase>("welcome")
   const [drawnSeasons, setDrawnSeasons] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const availablePositionCodes = useMemo(
+    () => getAvailablePositionCodes(slots, selectedSlots),
+    [slots, selectedSlots]
+  )
 
   useEffect(() => {
     const sid = localStorage.getItem("liga1_session_id")
@@ -55,9 +60,6 @@ export default function DraftPage() {
       setFormation(data.formation)
       setSlots(data.formation?.slots ?? [])
       setSelectedSlots(data.slots ?? [])
-      setOccupiedPositions(
-        (data.slots ?? []).map((s: SelectedSlot) => s.position_code)
-      )
 
       if (data.session?.drawn_season_ids?.length > 0) {
         setDrawnSeasons(data.session.drawn_season_ids)
@@ -66,7 +68,7 @@ export default function DraftPage() {
       if (data.slots?.length === 11) {
         setPhase("complete")
       } else if (data.session?.status === "draft" && data.slots?.length > 0) {
-        setPhase("selecting")
+        setPhase("drawn")
       }
     } catch {
       // ok
@@ -78,7 +80,7 @@ export default function DraftPage() {
     setLoading(true)
     setError(null)
     setSelectedPlayer(null)
-    setHighlightedSlots([])
+    setHighlightedSlotIndices([])
 
     try {
       const res = await fetch("/api/draw", {
@@ -108,19 +110,22 @@ export default function DraftPage() {
 
   const handleSelectPlayer = useCallback(
     (player: SquadPlayerWithPlayer) => {
-      if (phase !== "drawn") return
+      if (phase !== "drawn" && phase !== "selecting") return
+
+      if (selectedPlayer?.id === player.id) {
+        setSelectedPlayer(null)
+        setHighlightedSlotIndices([])
+        setPhase("drawn")
+        return
+      }
 
       setSelectedPlayer(player)
-      const available = player.positions.filter(
-        (p) => !occupiedPositions.includes(p)
+      setHighlightedSlotIndices(
+        getHighlightedSlots(player.positions, slots, selectedSlots)
       )
-      const highlighted = slots.filter((s) =>
-        available.includes(s.position_code)
-      )
-      setHighlightedSlots(highlighted)
       setPhase("selecting")
     },
-    [phase, occupiedPositions, slots]
+    [phase, slots, selectedSlots, selectedPlayer]
   )
 
   const handleAssignSlot = useCallback(
@@ -149,7 +154,6 @@ export default function DraftPage() {
         }
 
         setSelectedSlots((prev) => [...prev, data.selectedSlot])
-        setOccupiedPositions(data.occupiedPositions)
 
         if (data.isComplete) {
           setPhase("complete")
@@ -159,7 +163,7 @@ export default function DraftPage() {
         }
 
         setSelectedPlayer(null)
-        setHighlightedSlots([])
+        setHighlightedSlotIndices([])
       } catch {
         setError("Error al asignar")
       } finally {
@@ -197,7 +201,7 @@ export default function DraftPage() {
         <Pitch
           slots={slots}
           selectedSlots={selectedSlots}
-          highlightedSlots={highlightedSlots}
+          highlightedSlotIndices={highlightedSlotIndices}
           formationName={formation?.name ?? null}
           onSlotClick={handleAssignSlot}
         />
@@ -215,7 +219,7 @@ export default function DraftPage() {
           <SquadList
             players={draft?.squad_players ?? []}
             selectedPlayer={selectedPlayer}
-            occupiedPositions={occupiedPositions}
+            availablePositionCodes={availablePositionCodes}
             onSelectPlayer={handleSelectPlayer}
           />
         </div>
