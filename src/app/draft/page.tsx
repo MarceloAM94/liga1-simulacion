@@ -187,6 +187,7 @@ export default function DraftPage() {
             phase={phase}
             loading={loading}
             onDraw={handleDraw}
+            onSimulate={() => alert("Fase 3 - Simulación (próximamente)")}
           />
         </div>
       </header>

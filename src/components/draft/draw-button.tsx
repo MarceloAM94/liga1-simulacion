@@ -4,14 +4,15 @@ interface DrawButtonProps {
   phase: Phase
   loading: boolean
   onDraw: () => void
+  onSimulate?: () => void
 }
 
-export function DrawButton({ phase, loading, onDraw }: DrawButtonProps) {
+export function DrawButton({ phase, loading, onDraw, onSimulate }: DrawButtonProps) {
   if (phase === "complete") {
     return (
       <button
-        disabled
-        className="px-6 py-2 bg-emerald-800 text-emerald-300 font-semibold rounded-xl cursor-not-allowed"
+        onClick={onSimulate}
+        className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all hover:scale-105 active:scale-95"
       >
         Simular
       </button>

@@ -72,6 +72,8 @@ export interface SelectedSlot {
   team_name: string
   season_year: number
   player_name?: string
+  display_name?: string
+  jersey_number?: number
 }
 
 export interface TournamentRound {

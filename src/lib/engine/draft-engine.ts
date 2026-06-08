@@ -101,7 +101,7 @@ export async function assignPlayer(
   squadPlayerId: string,
   slotIndex: number
 ): Promise<{
-  selectedSlot: SelectedSlot & { player_name: string }
+  selectedSlot: SelectedSlot & { player_name: string; display_name: string; jersey_number: number }
   isComplete: boolean
   occupiedPositions: PositionCode[]
 }> {
@@ -140,7 +140,12 @@ export async function assignPlayer(
     team_name: teamName,
     season_year: seasonYear,
   })
-  const selectedSlot = { ...savedSlot, player_name: player.player.name }
+  const selectedSlot = {
+    ...savedSlot,
+    player_name: player.player.name,
+    display_name: player.player.display_name,
+    jersey_number: player.jersey_number ?? 0,
+  }
 
   const updatedSlots = await getSelectedSlots(session.id)
   const isComplete = updatedSlots.length === 11

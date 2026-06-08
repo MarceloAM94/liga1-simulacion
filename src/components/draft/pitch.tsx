@@ -65,42 +65,50 @@ export function Pitch({
           const slotPlayer = getSlotPlayer(index)
 
           return (
-            <button
+            <div
               key={slot.id}
-              onClick={() => {
-                if (highlighted && !occupied) {
-                  onSlotClick(index)
-                }
-              }}
-              disabled={!highlighted || occupied}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-200
-                flex flex-col items-center justify-center
-                ${occupied ? "cursor-default" : highlighted ? "cursor-pointer" : "cursor-not-allowed"}
-              `}
-              style={{ top, left, zIndex: 1 }}
+              className="absolute flex flex-col items-center"
+              style={{ top, left, zIndex: 1, transform: "translateX(-50%)" }}
             >
-              <div
-                className={`
-                  w-12 h-12 rounded-full flex items-center justify-center
-                  text-xs font-bold border-2 transition-all
-                  ${
-                    occupied
-                      ? "bg-emerald-800 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-900/50"
-                      : highlighted
-                        ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 animate-pulse hover:bg-emerald-500/40"
-                        : "bg-zinc-800/60 border-zinc-700 text-zinc-500"
+              <button
+                onClick={() => {
+                  if (highlighted && !occupied) {
+                    onSlotClick(index)
                   }
+                }}
+                disabled={!highlighted || occupied}
+                className={`transition-all duration-200 flex flex-col items-center justify-center
+                  ${occupied ? "cursor-default" : highlighted ? "cursor-pointer" : "cursor-not-allowed"}
                 `}
               >
-                {occupied ? (
-                  <span className="text-[10px] leading-tight text-center">
-                    {slotPlayer?.player_name?.slice(0, 2) ?? ""}
-                  </span>
-                ) : (
-                  <span className="text-[10px]">{POSITION_LABELS[slot.position_code] ?? slot.position_code}</span>
-                )}
-              </div>
-            </button>
+                <div
+                  className={`
+                    w-12 h-12 rounded-full flex items-center justify-center
+                    text-xs font-bold border-2 transition-all
+                    ${
+                      occupied
+                        ? "bg-emerald-800 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-900/50"
+                        : highlighted
+                          ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 animate-pulse hover:bg-emerald-500/40"
+                          : "bg-zinc-800/60 border-zinc-700 text-zinc-500"
+                    }
+                  `}
+                >
+                  {occupied ? (
+                    <span className="text-sm font-bold">
+                      {slotPlayer?.jersey_number ?? ""}
+                    </span>
+                  ) : (
+                    <span className="text-[10px]">{POSITION_LABELS[slot.position_code] ?? slot.position_code}</span>
+                  )}
+                </div>
+              </button>
+              {occupied && (
+                <span className="text-[10px] text-zinc-400 mt-0.5 truncate max-w-16 text-center leading-tight">
+                  {slotPlayer?.display_name ?? ""}
+                </span>
+              )}
+            </div>
           )
         })}
       </div>

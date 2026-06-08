@@ -129,15 +129,30 @@ export async function getSelectedSlotsWithPlayers(gameSessionId: string): Promis
 
   const ids = [...new Set(slots.map((s) => s.squad_player_id))]
   const { data: squadPlayers } = await db()
-    .from("squad_players").select("id, player:players(name)")
+    .from("squad_players").select("id, jersey_number, player:players(name, display_name)")
     .in("id", ids)
   const spMap = new Map(
     (squadPlayers ?? []).map((sp) => {
       const p = Array.isArray(sp.player) ? sp.player[0] : sp.player
-      return [sp.id, (p as { name?: string })?.name ?? ""]
+      return [
+        sp.id,
+        {
+          player_name: (p as { name?: string })?.name ?? "",
+          display_name: (p as { display_name?: string })?.display_name ?? "",
+          jersey_number: (sp as { jersey_number?: number })?.jersey_number ?? 0,
+        },
+      ]
     })
   )
-  return slots.map((row) => ({ ...row, player_name: spMap.get(row.squad_player_id) ?? "" }) as unknown as SelectedSlot)
+  return slots.map((row) => {
+    const info = spMap.get(row.squad_player_id) ?? { player_name: "", display_name: "", jersey_number: 0 }
+    return {
+      ...row,
+      player_name: info.player_name,
+      display_name: info.display_name,
+      jersey_number: info.jersey_number,
+    } as unknown as SelectedSlot
+  })
 }
 
 export async function addSelectedSlot(slot: Omit<SelectedSlot, "id">): Promise<SelectedSlot> {
