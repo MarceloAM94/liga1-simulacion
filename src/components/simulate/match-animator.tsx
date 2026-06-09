@@ -15,14 +15,6 @@ interface RoundResult {
   events: MatchEvent[]
 }
 
-const EVENT_ICONS: Record<string, string> = {
-  goal_for: "⚽",
-  goal_against: "🥅",
-  yellow_card: "🟨",
-  red_card: "🟥",
-  save: "🧤",
-}
-
 const EVENT_STYLES: Record<string, string> = {
   goal_for: "bg-emerald-900/40 border-emerald-700",
   goal_against: "bg-red-900/40 border-red-700",
@@ -320,7 +312,6 @@ function EventItem({
       <span className="text-xs text-zinc-500 w-8 shrink-0 font-mono">
         {event.minute}&apos;
       </span>
-      <span className="shrink-0">{EVENT_ICONS[event.event_type] ?? "•"}</span>
       <span className="text-zinc-200">{event.description ?? event.event_type}</span>
     </div>
   )

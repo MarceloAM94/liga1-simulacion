@@ -114,14 +114,6 @@ function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
     CAI: "CAI", CAD: "CAD",
   }
 
-  const EVENT_ICONS: Record<string, string> = {
-    goal_for: "⚽",
-    goal_against: "🥅",
-    yellow_card: "🟨",
-    red_card: "🟥",
-    save: "🧤",
-  }
-
   const EVENT_LABELS: Record<string, string> = {
     goal_for: "Gol",
     goal_against: "Gol rival",
@@ -180,7 +172,6 @@ function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
                     <span className="text-xs text-zinc-500 w-8 shrink-0 font-mono">
                       {ev.minute}&apos;
                     </span>
-                    <span className="shrink-0">{EVENT_ICONS[ev.event_type] ?? "•"}</span>
                     <span className="text-zinc-300">
                       {ev.description ?? EVENT_LABELS[ev.event_type] ?? ev.event_type}
                     </span>
