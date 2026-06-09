@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { MatchAnimator } from "./match-animator"
+import { CardGenerator } from "./card-generator"
 import type { MatchEvent, CardData } from "@/types/database"
 
 interface RoundResult {
@@ -186,81 +187,6 @@ function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
   )
 }
 
-function ChampionsCard({
-  cardData,
-  isChampion,
-}: {
-  cardData: CardData
-  isChampion: boolean
-}) {
-  const positionLabels: Record<string, string> = {
-    POR: "POR", DFC: "DFC", LI: "LI", LD: "LD",
-    MC: "MC", MCD: "MCD", MI: "MI", MD: "MD", CAM: "CAM",
-    EI: "EI", ED: "ED", DC: "DC", SD: "SD",
-    CAI: "CAI", CAD: "CAD",
-  }
-
-  const won =
-    cardData.phase_reached === "Campeón"
-
-  return (
-    <div
-      className={`border-2 rounded-xl p-5 animate-in fade-in duration-500 ${
-        won
-          ? "border-yellow-500 bg-yellow-950/20"
-          : "border-zinc-700 bg-zinc-900/50"
-      }`}
-    >
-      <h2
-        className={`text-xl font-black mb-1 ${
-          won ? "text-yellow-400" : "text-zinc-300"
-        }`}
-      >
-        {won ? "¡CAMPEÓN!" : "Torneo finalizado"}
-      </h2>
-      <p className="text-sm text-zinc-400 mb-4">
-        Llegaste hasta:{" "}
-        <span className="font-semibold text-zinc-200">{cardData.phase_reached}</span>
-      </p>
-
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center">
-          <p className="text-2xl font-black text-zinc-100">{cardData.goals_for}</p>
-          <p className="text-xs text-zinc-500">Goles a favor</p>
-        </div>
-        <div className="text-center">
-          <p className="text-2xl font-black text-zinc-100">{cardData.goals_against}</p>
-          <p className="text-xs text-zinc-500">Goles en contra</p>
-        </div>
-        <div className="text-center">
-          <p className="text-2xl font-black text-zinc-100">{cardData.wins}</p>
-          <p className="text-xs text-zinc-500">Victorias</p>
-        </div>
-      </div>
-
-      <div className="text-center mb-4">
-        <p className="text-xs text-zinc-500">Overall del equipo</p>
-        <p className="text-3xl font-black text-zinc-100">{cardData.team_overall}</p>
-      </div>
-
-      <h3 className="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wide">
-        Plantilla
-      </h3>
-      <div className="space-y-1">
-        {cardData.players.map((p, i) => (
-          <div key={i} className="flex items-center justify-between text-sm">
-            <span className="text-zinc-300">
-              {positionLabels[p.position_code] ?? p.position_code}
-            </span>
-            <span className="text-zinc-100 font-medium">{p.display_name}</span>
-            <span className="text-zinc-400 font-mono text-xs">{p.rating}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function TournamentProgression({ data, sessionId }: { data: TournamentData; sessionId: string }) {
   const [currentRound, setCurrentRound] = useState(0)
   const [finished, setFinished] = useState(false)
@@ -323,7 +249,7 @@ export function TournamentProgression({ data, sessionId }: { data: TournamentDat
       ) : (
         <div className="space-y-5">
           {showCard && (
-            <ChampionsCard cardData={data.cardData} isChampion={data.isChampion} />
+            <CardGenerator cardData={data.cardData} isChampion={data.isChampion} />
           )}
           {!showCard && (
             <>
