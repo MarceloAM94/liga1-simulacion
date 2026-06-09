@@ -165,14 +165,14 @@ export function CardGenerator({ cardData, isChampion }: CardGeneratorProps) {
         <button
           onClick={handleDownload}
           disabled={!mounted}
-          className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors disabled:opacity-50"
+          className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
         >
           Descargar card
         </button>
         <button
           onClick={handleCopy}
           disabled={!mounted}
-          className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors disabled:opacity-50"
+          className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
         >
           {copied ? "¡Copiada!" : "Copiar imagen"}
         </button>

@@ -57,9 +57,9 @@ function BracketView({
         return (
           <div key={i} className="flex flex-col items-center shrink-0">
             <div
-              className={`w-28 border rounded-lg p-2 text-center transition-all duration-300 ${
+              className={`w-28 border rounded-lg p-2 text-center transition-all duration-500 ${
                 isCurrent && !finished
-                  ? "border-zinc-400 bg-zinc-900 scale-105"
+                  ? "border-zinc-400 bg-zinc-900 scale-105 shadow-lg shadow-zinc-900/50"
                   : isPast
                   ? won
                     ? "border-emerald-700 bg-emerald-950/30 opacity-60"
@@ -91,9 +91,9 @@ function BracketView({
       {/* Champion trophy */}
       <div className="flex flex-col items-center shrink-0">
         <div
-          className={`w-28 border-2 rounded-lg p-2 text-center transition-all duration-300 ${
+          className={`w-28 border-2 rounded-lg p-2 text-center transition-all duration-500 ${
             finished && isChampion
-              ? "border-yellow-500 bg-yellow-950/20"
+              ? "border-yellow-500 bg-yellow-950/20 scale-105 shadow-lg shadow-yellow-900/30"
               : "border-zinc-800 bg-zinc-900/50 opacity-20"
           }`}
         >
@@ -139,7 +139,7 @@ function MatchHistoryCards({ rounds }: { rounds: RoundResult[] }) {
                 : "border-red-700 bg-red-950/20"
             }`}
           >
-            <summary className="p-4 cursor-pointer hover:bg-zinc-800/30 transition-colors">
+            <summary className="p-4 cursor-pointer hover:bg-zinc-800/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-zinc-500 uppercase tracking-wide">
@@ -265,19 +265,19 @@ export function TournamentProgression({ data, sessionId }: { data: TournamentDat
           <button
             onClick={handleResimulate}
             disabled={resimulating}
-            className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors disabled:opacity-50"
+            className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
           >
             {resimulating ? "Simulando..." : "Repetir simulación"}
           </button>
           <button
             onClick={() => setShowCard((s) => !s)}
-            className="px-5 py-3 bg-zinc-800 rounded-xl text-sm hover:bg-zinc-700 transition-colors"
+            className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
           >
             {showCard ? "Volver al historial" : "Ver card"}
           </button>
           <a
             href="/"
-            className="px-5 py-3 bg-emerald-800 rounded-xl text-sm hover:bg-emerald-700 transition-colors font-medium"
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
           >
             Volver a jugar
           </a>

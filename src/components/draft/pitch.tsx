@@ -42,17 +42,17 @@ export function Pitch({
           className="absolute inset-0 w-full h-full"
           style={{ zIndex: 0 }}
         >
-          <rect width="300" height="400" fill="#1a6b3c" rx="4" />
-          <rect x="10" y="10" width="280" height="380" fill="none" stroke="#2a8b4c" strokeWidth="2" rx="2" />
-          <line x1="10" y1="200" x2="290" y2="200" stroke="#2a8b4c" strokeWidth="2" />
-          <circle cx="150" cy="200" r="30" fill="none" stroke="#2a8b4c" strokeWidth="2" />
-          <circle cx="150" cy="200" r="4" fill="#2a8b4c" />
+          <rect width="300" height="400" fill="#166534" rx="4" />
+          <rect x="10" y="10" width="280" height="380" fill="none" stroke="#22c55e" strokeWidth="2" rx="2" />
+          <line x1="10" y1="200" x2="290" y2="200" stroke="#22c55e" strokeWidth="2" />
+          <circle cx="150" cy="200" r="30" fill="none" stroke="#22c55e" strokeWidth="2" />
+          <circle cx="150" cy="200" r="4" fill="#22c55e" />
           {/* Área superior */}
-          <rect x="75" y="10" width="150" height="60" fill="none" stroke="#2a8b4c" strokeWidth="2" />
-          <rect x="100" y="10" width="100" height="25" fill="none" stroke="#2a8b4c" strokeWidth="2" />
+          <rect x="75" y="10" width="150" height="60" fill="none" stroke="#22c55e" strokeWidth="2" />
+          <rect x="100" y="10" width="100" height="25" fill="none" stroke="#22c55e" strokeWidth="2" />
           {/* Área inferior */}
-          <rect x="75" y="330" width="150" height="60" fill="none" stroke="#2a8b4c" strokeWidth="2" />
-          <rect x="100" y="365" width="100" height="25" fill="none" stroke="#2a8b4c" strokeWidth="2" />
+          <rect x="75" y="330" width="150" height="60" fill="none" stroke="#22c55e" strokeWidth="2" />
+          <rect x="100" y="365" width="100" height="25" fill="none" stroke="#22c55e" strokeWidth="2" />
         </svg>
 
         {/* Slots */}
@@ -79,17 +79,18 @@ export function Pitch({
                 disabled={!highlighted || occupied}
                 className={`transition-all duration-200 flex flex-col items-center justify-center
                   ${occupied ? "cursor-default" : highlighted ? "cursor-pointer" : "cursor-not-allowed"}
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-full
                 `}
               >
                 <div
                   className={`
                     w-12 h-12 rounded-full flex items-center justify-center
-                    text-xs font-bold border-2 transition-all
+                    text-xs font-bold border-2 transition-all duration-300
                     ${
                       occupied
-                        ? "bg-emerald-800 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-900/50"
+                        ? "bg-emerald-800 border-emerald-500 text-emerald-200 shadow-lg shadow-emerald-900/50 scale-100"
                         : highlighted
-                          ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 animate-pulse hover:bg-emerald-500/40"
+                          ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 animate-pulse hover:bg-emerald-500/40 hover:scale-110"
                           : "bg-zinc-800/60 border-zinc-700 text-zinc-500"
                     }
                   `}

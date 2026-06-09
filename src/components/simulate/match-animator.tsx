@@ -307,7 +307,9 @@ function EventItem({
 
   return (
     <div
-      className={`flex items-start gap-2 text-sm p-2 rounded-lg border ${EVENT_STYLES[event.event_type] ?? "border-zinc-800"} animate-in fade-in slide-in-from-left-2 duration-300`}
+      className={`flex items-start gap-2 text-sm p-2 rounded-lg border animate-scale-in ${
+        EVENT_STYLES[event.event_type] ?? "border-zinc-800"
+      }`}
     >
       <span className="text-xs text-zinc-500 w-8 shrink-0 font-mono">
         {event.minute}&apos;
@@ -368,9 +370,9 @@ export function MatchAnimator({
 
   if (phase === "intro") {
     return (
-      <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in fade-in duration-500">
+      <div className="flex flex-col items-center justify-center py-12 gap-4 animate-scale-in">
         <div className="w-16 h-16 rounded-full border-4 border-zinc-600 border-t-zinc-300 animate-spin" />
-        <p className="text-zinc-400 text-sm animate-pulse">Iniciando partido...</p>
+        <p className="text-zinc-400 text-sm animate-pulse-soft">Iniciando partido...</p>
         <p className="text-lg font-bold text-zinc-200">{round.roundName}</p>
         <p className="text-zinc-500 text-sm">vs {round.rivalTeamName} ({round.rivalYear})</p>
       </div>
@@ -453,7 +455,7 @@ export function MatchAnimator({
 
       {/* Done state */}
       {phase === "done" && (
-        <div className="text-center py-4 animate-in fade-in duration-500">
+        <div className="text-center py-4 animate-scale-in">
           <p className="text-lg font-black text-zinc-200">
             {won ? "¡Victoria!" : "Derrota"}
           </p>

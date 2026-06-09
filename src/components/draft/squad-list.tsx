@@ -34,7 +34,7 @@ export function SquadList({
           <button
             key={player.id}
             onClick={() => onSelectPlayer(player)}
-            className={`w-full text-left px-3 py-2.5 transition-colors flex items-center gap-3
+            className={`w-full text-left px-3 py-2.5 transition-colors flex items-center gap-3 focus-visible:outline-none focus-visible:bg-zinc-800/80 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500
               ${
                 selectedPlayer?.id === player.id
                   ? "bg-emerald-900/40 border-l-2 border-emerald-500"

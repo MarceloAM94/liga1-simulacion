@@ -33,6 +33,7 @@ export default function DraftPage() {
   const [phase, setPhase] = useState<Phase>("welcome")
   const [drawnSeasons, setDrawnSeasons] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [pageLoading, setPageLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const availablePositionCodes = useMemo(
@@ -72,6 +73,8 @@ export default function DraftPage() {
       }
     } catch {
       // ok
+    } finally {
+      setPageLoading(false)
     }
   }
 
@@ -201,12 +204,27 @@ export default function DraftPage() {
 
   const placedCount = selectedSlots.length
 
+  if (pageLoading) {
+    return (
+      <div className="flex flex-1 flex-col p-4 gap-4 max-w-7xl mx-auto w-full animate-fade-in-left">
+        <header className="flex items-center justify-between">
+          <div className="h-8 w-64 bg-zinc-800 rounded-lg animate-pulse-soft" />
+          <div className="h-10 w-28 bg-zinc-800 rounded-xl animate-pulse-soft" />
+        </header>
+        <div className="flex flex-1 gap-4 flex-col lg:flex-row">
+          <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl animate-pulse-soft" style={{ minHeight: 400 }} />
+          <div className="w-full lg:w-80 bg-zinc-900 border border-zinc-800 rounded-xl animate-pulse-soft" style={{ minHeight: 400 }} />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-1 flex-col p-4 gap-4 max-w-7xl mx-auto w-full">
+    <div className="flex flex-1 flex-col p-4 gap-4 max-w-7xl mx-auto w-full animate-fade-in-left">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Liga 1 Perú Simulador</h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-zinc-400">
+          <span className="text-sm text-zinc-500">
             {placedCount}/11 colocados
           </span>
           <DrawButton
@@ -219,7 +237,7 @@ export default function DraftPage() {
       </header>
 
       {error && (
-        <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2 rounded-lg text-sm">
+        <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-2.5 rounded-xl text-sm">
           {error}
         </div>
       )}
@@ -235,7 +253,7 @@ export default function DraftPage() {
 
         <div className="w-full lg:w-80 flex flex-col gap-4">
           {draft && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 animate-scale-in">
               <p className="text-xs text-zinc-500 uppercase tracking-wide">
                 {draft.season.year} — {draft.team?.name ?? draft.season.team.name}
               </p>

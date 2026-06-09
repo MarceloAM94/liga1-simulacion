@@ -64,9 +64,9 @@ function SimulateContent() {
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 animate-scale-in">
           <div className="w-12 h-12 rounded-full border-4 border-zinc-600 border-t-zinc-300 animate-spin" />
-          <p className="text-zinc-400 animate-pulse">Cargando resultados...</p>
+          <p className="text-zinc-400 animate-pulse-soft">Cargando resultados...</p>
         </div>
       </div>
     )
@@ -74,11 +74,11 @@ function SimulateContent() {
 
   if (error) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 animate-scale-in">
         <p className="text-red-400">{error}</p>
         <button
           onClick={() => router.push("/draft")}
-          className="px-4 py-2 bg-zinc-800 rounded-lg text-sm hover:bg-zinc-700"
+          className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
         >
           Volver al draft
         </button>
@@ -88,7 +88,7 @@ function SimulateContent() {
 
   if (!data) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center animate-scale-in">
         <p className="text-zinc-500">Sin datos</p>
       </div>
     )
@@ -96,13 +96,13 @@ function SimulateContent() {
 
   if (data.status === "draft") {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <div className="bg-amber-900/50 border border-amber-700 text-amber-200 px-4 py-2 rounded-lg text-sm">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 animate-scale-in">
+        <div className="bg-amber-900/50 border border-amber-700 text-amber-200 px-5 py-3 rounded-xl text-sm">
           Este torneo aún no se ha simulado.
         </div>
         <button
           onClick={() => router.push("/draft")}
-          className="px-4 py-2 bg-zinc-800 rounded-lg text-sm hover:bg-zinc-700"
+          className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium rounded-xl text-sm transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
         >
           Ir al draft
         </button>
@@ -110,7 +110,11 @@ function SimulateContent() {
     )
   }
 
-  return <TournamentProgression data={data} sessionId={sessionId!} />
+  return (
+    <div className="animate-fade-in-left">
+      <TournamentProgression data={data} sessionId={sessionId!} />
+    </div>
+  )
 }
 
 export default function SimulatePage() {
@@ -118,9 +122,9 @@ export default function SimulatePage() {
     <Suspense
       fallback={
         <div className="flex flex-1 items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 animate-scale-in">
             <div className="w-12 h-12 rounded-full border-4 border-zinc-600 border-t-zinc-300 animate-spin" />
-            <p className="text-zinc-400 animate-pulse">Cargando...</p>
+            <p className="text-zinc-400 animate-pulse-soft">Cargando...</p>
           </div>
         </div>
       }

@@ -45,7 +45,7 @@ export default function Welcome() {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 animate-slide-up">
       <div className="flex flex-col items-center gap-8 text-center max-w-lg">
         <div className="space-y-2">
           <h1 className="text-5xl font-bold tracking-tight">
@@ -64,9 +64,10 @@ export default function Welcome() {
         <button
           onClick={handleStart}
           disabled={starting}
-          className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 
-                     text-white font-semibold rounded-2xl text-lg transition-all
-                     hover:scale-105 active:scale-95"
+          className="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700
+                     text-white font-semibold rounded-xl text-lg transition-all
+                     hover:scale-[1.02] active:scale-[0.98]
+                     focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
         >
           {starting ? "Preparando..." : "Comenzar"}
         </button>
